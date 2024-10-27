@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const players = await getCollection('players');
+
+    return players.map(player => ({
+        params: { id: player.slug },
+        props: { player },
+    }));
+}
+
+const { player } = Astro.props;
+const { data, slug } = player;
+const { name, position, img, minutesplayed, shortbio, transfermarket } = data;
+
+const { Content } = await render(player);
+---
+
+<Layout title={`${name} - Real Murcia`}>
+    <div class="flex gap-12">
+        <aside class="flex flex-col items-center gap-4">
+            <img
+                transition:name={`img-${slug}`}
+                class="w-96 h-auto"
+                src={`/${img}`}
+                alt={name}
+            />
+        </aside>
+
+        <main class="max-w-3xl">
+            <h1 class="text-4xl font-bold mb-4">{name}</h1>
+            <div class="prose prose-invert">
+                <Content />
+            </div>
+        </main>
+    </div>
+</Layout>
